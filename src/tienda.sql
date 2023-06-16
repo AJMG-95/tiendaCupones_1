@@ -23,7 +23,7 @@ CREATE TABLE facturas (
     id         bigserial  PRIMARY KEY,
     created_at timestamp  NOT NULL DEFAULT localtimestamp(0),
     usuario_id bigint NOT NULL REFERENCES usuarios (id),
-    cupon_id   bigint REFERENCES usuarios (id)
+    cupon_id   bigint REFERENCES cupones (id)
 );
 
 DROP TABLE IF EXISTS articulos_facturas CASCADE;

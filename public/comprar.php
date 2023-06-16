@@ -18,6 +18,7 @@
     }
 
     $cuponCodigo = obtener_get('cupon');
+    $cuponDescartar = obtener_get('cuponDescartar');
     $cupon = false;
     $carrito = unserialize(carrito());
 
@@ -32,11 +33,14 @@
                 $cupon = false;
                 $_SESSION['error'] = 'El cupón ha expirado';
             }
+        } else if (isset($cuponDescartar) ) {
+            $_SESSION['exito'] = 'Eliminaste el cupón';
+            $cupon = false;
         } else {
             $_SESSION['error'] = 'El cupón no existe';
         }
     }
-    
+
     if (obtener_post('_testigo') !== null) {
         $pdo = conectar();
         $ids_art_carrito = implode(', ', $carrito->getIds());
@@ -104,11 +108,17 @@
         <?php require '../src/_menu.php' ?>
         <?php require '../src/_alerts.php' ?>
         <div class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
+
             <form action="" method="get">
                 <label for="cupon">Cupon de descuento: </label>
                 <input type="text" name="cupon" id="cupon" class="rounded-lg" value="<?= isset($cupon) ? $cupon['codigo'] : '' ?>">
-                <button type="submit" href="" class="mx-auto focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900">Aplicar</button>
+                <button type="submit" href="" class="mx-auto focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900">Aplicar </button>
             </form>
+            <form action="" method="get">
+                <input type="hidden" name="cuponDescartar" id="cupon" class="rounded-lg" value="false">
+                <button type="submit" href="" class="mx-auto focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Descartar cupón</button>
+            </form>
+
             <table class="mx-auto text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <th scope="col" class="py-3 px-6">Código</th>
@@ -142,17 +152,28 @@
                     <?php endforeach;
 
                     if (isset($cupon)) {
+                        $subtotal = $total;
                         $total = $total - $total * $cupon['descuento'];
-                    } else {
                     }
 
                     ?>
 
                 </tbody>
                 <tfoot>
-                    <td colspan="3"></td>
-                    <td class="text-center font-semibold">TOTAL:</td>
-                    <td class="text-center font-semibold"><?= dinero($total) ?></td>
+                    <?php
+                    if ($cupon) : ?>
+                        <tr>
+                            <td colspan="3"></td>
+                            <td class="text-center font-semibold">Cupón aplicado: </td>
+                            <td class="text-center font-semibold text-red-600"> -<?= dinero($subtotal - $total) ?> </td>
+                        </tr>
+                    <?php endif ?>
+
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-center font-semibold">TOTAL:</td>
+                        <td class="text-center font-semibold"><?= dinero($total) ?></td>
+                    </tr>
                 </tfoot>
             </table>
             <form action="" method="POST" class="mx-auto flex mt-4">
