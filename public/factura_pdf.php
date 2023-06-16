@@ -53,7 +53,7 @@ foreach ($factura->getLineas($pdo) as $linea) {
 }
 
 if ($factura -> getCuponId()) {
-    $total = dinero($factura -> aplicaCupon($total, $factura -> getCuponId())) . '  Aplicaste un cupón de descuento';
+    $total = dinero($factura -> aplicaCupon($total, $factura -> getCuponId())['total']) . '. Aplicaste el cupón: ' .  $factura -> aplicaCupon($total, $factura -> getCuponId())['cupon'];
 } else {
     $total = dinero($total);
 }

@@ -2,6 +2,7 @@
 
 use App\Tablas\Factura;
 use App\Tablas\Usuario;
+use App\Tablas\Cupon;
 
 session_start() ?>
 <!DOCTYPE html>
@@ -21,6 +22,7 @@ session_start() ?>
     if (!\App\Tablas\Usuario::esta_logueado()) {
         return redirigir_login();
     }
+
 
     $facturas = Factura::todosConTotal(
         ['usuario_id = :usuario_id'],
@@ -52,7 +54,7 @@ session_start() ?>
                             <td class="py-4 px-6">
                                 <?=
                                 $factura->getCuponId() ?
-                                    hh(dinero($factura->aplicaCupon($factura->getTotal(),  $factura->getCuponId()))) . "  Cupón aplicado":
+                                    hh(dinero($factura->aplicaCupon($factura->getTotal(),  $factura->getCuponId())['total'])) . "  " .$factura->aplicaCupon($factura->getTotal(),  $factura->getCuponId())['cupon'] :
                                     hh(dinero($factura->getTotal()));
                                 ?>
                             </td>

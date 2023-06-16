@@ -47,15 +47,15 @@ class Factura extends Modelo
     {
         $pdo = $pdo ?? conectar();
 
-        $sent = $pdo -> prepare("SELECT descuento FROM cupones WHERE id = :cuponId");
+        $sent = $pdo -> prepare("SELECT descuento, cupon FROM cupones WHERE id = :cuponId");
         $sent->execute([':cuponId' => $cuponId]);
-        $descuento = $sent->fetchColumn();
+        $res = $sent->fetch(PDO::FETCH_ASSOC);
 
-        $total = $total - $total * $descuento;
+        $total = $total - $total * $res['descuento'];
 
         $this->total = $total;
 
-        return $this->total;
+        return ['total' => $this-> total, 'cupon' => $res['cupon']];
     }
 
     public function getTotal(?PDO $pdo = null)
